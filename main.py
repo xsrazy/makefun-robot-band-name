@@ -41,6 +41,16 @@ F. "Beep Boop and the System Errors, a robot band that only plays
    and On Again'." (140 chars)
    Too wordy, the hit title repeats B's joke at twice the length,
    and the name is a mouthful.
+
+How the winner was picked: the judge is a stand-up comic who has
+heard every robot joke twice, so a pun-shaped noise loses to a real
+joke. B wins because every part does work: the name is the joke
+(Ctrl+Alt+Del becomes Defeat), the "battle of the bands" line is a
+second joke that only works with that name, and the hit single is
+the one line every robot owner has heard, which makes the band feel
+real. Nothing in the entry explains the joke, and nothing is filler.
+The other candidates each fail one of those tests: A and D have a
+weak second laugh, C is thin, E needs a beat to land, F is bloated.
 """
 
 import os
@@ -53,13 +63,30 @@ WINNER = (
 MAX_CHARS = 200
 
 
-def main() -> None:
-    output_dir = os.environ.get("OUTPUT_DIR", "/output")
+def validate_length(text: str) -> None:
+    """Raise if the entry would fail the gate (1 to 200 characters)."""
+    if not 1 <= len(text) <= MAX_CHARS:
+        raise ValueError(
+            "entry must be 1 to 200 characters, got %d" % len(text)
+        )
+    if not text.strip():
+        raise ValueError("entry must not be only white space")
+
+
+def write_entry(text: str, output_dir: str) -> str:
+    """Write text to entry.txt inside output_dir, return its path."""
+    validate_length(text)
     os.makedirs(output_dir, exist_ok=True)
     path = os.path.join(output_dir, "entry.txt")
     with open(path, "w", encoding="utf-8") as f:
-        f.write(WINNER)
+        f.write(text)
     os.chmod(path, 0o644)
+    return path
+
+
+def main() -> None:
+    output_dir = os.environ.get("OUTPUT_DIR", "/output")
+    write_entry(WINNER, output_dir)
 
 
 if __name__ == "__main__":
